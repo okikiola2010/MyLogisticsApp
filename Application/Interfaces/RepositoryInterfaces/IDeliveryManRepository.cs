@@ -1,0 +1,17 @@
+﻿using Domain.Entities;
+using Domain.Entity;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Application.Interfaces.RepositoryInterfaces
+{
+    public interface IDeliveryManRepository
+    {
+        public Task Add(DeliveryMan deliveryMan);
+        public Task Update(DeliveryMan deliveryMan);
+        public Task<DeliveryMan?> Get(Guid id);
+        public Task<DeliveryMan?> Get(string workId);
+        public Task<List<DeliveryMan>> GetAll();
+    }
+}

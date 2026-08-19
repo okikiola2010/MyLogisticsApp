@@ -10,7 +10,7 @@ namespace Application
         public static string AdminRole = "app_Admin";
         public static string ClientRole = "app_Client";
         public static string DeliveryManRole = "app_Worker";
-        public static User CurrentLoginUser;
+        public static User? CurrentLoginUser;
 
     }
 }

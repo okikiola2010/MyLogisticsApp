@@ -7,6 +7,6 @@ namespace Application.Interfaces.ServiceInterfaces
 {
     public interface IAuthService
     {
-        public BaseResponse<LoginResponseModel> Login(LoginResponseModel model);
+        public Task<BaseResponse<LoginResponseModel>> Login(LoginRequestModel model);
     }
 }

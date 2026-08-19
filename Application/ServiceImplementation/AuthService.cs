@@ -9,7 +9,7 @@ namespace Application.ServiceImplementation
 {
     public class AuthService(IUserRepository userRepository) : IAuthService
     {
-        public async BaseResponse<LoginResponseModel> Login(LoginRequestModel model)
+        public async Task<BaseResponse<LoginResponseModel>> Login(LoginRequestModel model)
         {
             var user = await userRepository.Get(model.Email);
             if (user == null) 

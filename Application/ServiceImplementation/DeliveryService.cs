@@ -59,7 +59,7 @@ namespace Application.ServiceImplementation
         }
         public async Task Assigned(DeliveryMan deliveryMan)
         {
-            deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName, deliveryMan.UserId, "System", false, DateTime.UtcNow);
+            deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName,deliveryMan.WorkId, deliveryMan.UserId, "System", false, DateTime.UtcNow);
             await deliveryManRepository.Update(deliveryMan);
             await unitOfWork.SaveChanges();
         }

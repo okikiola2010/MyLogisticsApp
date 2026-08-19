@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class CommunityService(ICommunityRepository communityRepository,IUnitOfWork unitOfWork, IDeliveryManService service) : ICommunityService
+    public class CommunityService(ICommunityRepository communityRepository,IUnitOfWork unitOfWork) : ICommunityService
     {
         public async Task<BaseResponse<AddCommunityResponseModel>> AddCountry(AddCommunityRequestModel model)
         {

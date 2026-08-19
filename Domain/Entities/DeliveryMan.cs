@@ -37,7 +37,7 @@ namespace Domain.Entities
             string r = $"{b}-{Guid.NewGuid().ToString().Split("-")[0].ToString().ToUpper()}@{firstName[0].ToString().ToUpper()}{lastName[0].ToString().ToUpper()}".ToUpper();
             return r;
         }
-        public void Update(string firstName, string lastName, Guid userId,  string updatedBy, bool isDeleted, DateTime lastTimeOrdered)
+        public void Update(string firstName, string lastName, string workId, Guid userId,  string updatedBy, bool isDeleted, DateTime lastTimeOrdered)
         {
             FirstName = firstName;
             LastName = lastName;

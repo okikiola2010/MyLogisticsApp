@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Migrations
 {
-    public partial class Init : Migration
+    /// <inheritdoc />
+    public partial class Umar : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySQL:Charset","utf8mb4");
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "States",
@@ -76,13 +78,12 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "Clients",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     FirstName = table.Column<string>(type: "longtext", nullable: false),
                     LastName = table.Column<string>(type: "longtext", nullable: false),
-                    Email = table.Column<string>(type: "longtext", nullable: false),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: false),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
@@ -93,9 +94,9 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.PrimaryKey("PK_Clients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Customers_Users_UserId",
+                        name: "FK_Clients_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -110,11 +111,8 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     FirstName = table.Column<string>(type: "longtext", nullable: false),
                     LastName = table.Column<string>(type: "longtext", nullable: false),
-                    Email = table.Column<string>(type: "longtext", nullable: false),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false),
                     WorkId = table.Column<string>(type: "longtext", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "longtext", nullable: false),
-                    MiniTime = table.Column<string>(type: "longtext", nullable: false),
                     LastTimeOrdered = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -167,7 +165,7 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Cities",
+                name: "Communities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -181,9 +179,9 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cities", x => x.Id);
+                    table.PrimaryKey("PK_Communities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Cities_Lgas_LgaId",
+                        name: "FK_Communities_Lgas_LgaId",
                         column: x => x.LgaId,
                         principalTable: "Lgas",
                         principalColumn: "Id",
@@ -198,7 +196,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Context = table.Column<string>(type: "longtext", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    ClientId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "longtext", nullable: true),
@@ -209,9 +207,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
+                        name: "FK_Notifications_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Notifications_Users_UserId",
@@ -228,8 +226,9 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     HasDelivered = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    LgaId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Limit = table.Column<int>(type: "int", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     DeliveryManId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -245,6 +244,12 @@ namespace Infrastructure.Migrations
                         column: x => x.DeliveryManId,
                         principalTable: "DeliveryMen",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Deliveries_Lgas_LgaId",
+                        column: x => x.LgaId,
+                        principalTable: "Lgas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -253,9 +258,9 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CountryId = table.Column<Guid>(type: "char(36)", nullable: false),
                     StateId = table.Column<Guid>(type: "char(36)", nullable: false),
                     LgaId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CommunityId = table.Column<Guid>(type: "char(36)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "longtext", nullable: true),
@@ -266,20 +271,20 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Locations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Locations_Cities_LgaId",
-                        column: x => x.LgaId,
-                        principalTable: "Cities",
+                        name: "FK_Locations_Communities_CommunityId",
+                        column: x => x.CommunityId,
+                        principalTable: "Communities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Locations_Lgas_StateId",
-                        column: x => x.StateId,
+                        name: "FK_Locations_Lgas_LgaId",
+                        column: x => x.LgaId,
                         principalTable: "Lgas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Locations_States_CountryId",
-                        column: x => x.CountryId,
+                        name: "FK_Locations_States_StateId",
+                        column: x => x.StateId,
                         principalTable: "States",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -291,7 +296,7 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false),
                     IsUrgent = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsReady = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PickupLocationId = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -307,6 +312,12 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeliveryRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeliveryRequests_Clients_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DeliveryRequests_Deliveries_DeliveryId",
                         column: x => x.DeliveryId,
@@ -329,14 +340,14 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cities_LgaId",
-                table: "Cities",
-                column: "LgaId");
+                name: "IX_Clients_UserId",
+                table: "Clients",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customers_UserId",
-                table: "Customers",
-                column: "UserId");
+                name: "IX_Communities_LgaId",
+                table: "Communities",
+                column: "LgaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_DeliveryManId",
@@ -344,9 +355,19 @@ namespace Infrastructure.Migrations
                 column: "DeliveryManId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Deliveries_LgaId",
+                table: "Deliveries",
+                column: "LgaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DeliveryMen_UserId",
                 table: "DeliveryMen",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryRequests_CustomerId",
+                table: "DeliveryRequests",
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeliveryRequests_DeliveryId",
@@ -369,9 +390,9 @@ namespace Infrastructure.Migrations
                 column: "StateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locations_CountryId",
+                name: "IX_Locations_CommunityId",
                 table: "Locations",
-                column: "CountryId");
+                column: "CommunityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_LgaId",
@@ -394,9 +415,9 @@ namespace Infrastructure.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_CustomerId",
+                name: "IX_Notifications_ClientId",
                 table: "Notifications",
-                column: "CustomerId");
+                column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -423,13 +444,13 @@ namespace Infrastructure.Migrations
                 name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "DeliveryMen");
 
             migrationBuilder.DropTable(
-                name: "Cities");
+                name: "Communities");
 
             migrationBuilder.DropTable(
                 name: "Users");

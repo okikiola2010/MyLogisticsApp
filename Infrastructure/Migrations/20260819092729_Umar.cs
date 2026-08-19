@@ -339,6 +339,11 @@ namespace Infrastructure.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Email", "HashPassword", "IsDeleted", "Role", "UpdatedAt", "UpdatedBy" },
+                values: new object[] { new Guid("a2f9d0ec-1b68-4fbb-8178-813056a95fd7"), new DateTime(2026, 8, 19, 9, 27, 28, 321, DateTimeKind.Utc).AddTicks(1597), "a2f9d0ec-1b68-4fbb-8178-813056a95fd7", "admin@gmail.com", "$2a$11$AyBJ/PIa1rYnjAMeeyCrX.Gun7E.CoeY5ElGEWE8uY9HPLJgcdb2a", false, "app_Admin", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_UserId",
                 table: "Clients",

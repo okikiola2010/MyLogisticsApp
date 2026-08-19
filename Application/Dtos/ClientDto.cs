@@ -13,13 +13,11 @@ namespace Application.Dtos
         public DateTime UpdatedAt { get; set; }
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
-        public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public Guid UserId { get; set; }
-        public User? User { get; set; }
         public string FullName => $"{FirstName} {LastName}";
 
     }
-    public record AddClientRequestModel(string FirstName, string LastName, string Email, string PhoneNumber, string Password, string CreatedBy);
+    public record AddClientRequestModel(string FirstName, string LastName, string Email, string PhoneNumber, string Password);
     public record AddClientResponseModel(Guid Id);
 }

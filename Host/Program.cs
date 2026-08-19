@@ -25,7 +25,11 @@ namespace Host
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AppDbContext>(config => config.UseMySQL(builder.Configuration.GetConnectionString("Default")!));
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IDeliveryManRepository,DeliverManRepository>();
@@ -55,8 +59,11 @@ namespace Host
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+               
             }
-
+            app.MapControllers();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

@@ -25,9 +25,9 @@ namespace Infrastructure.Context
         public DbSet<Community> Communities { get; set; }
         public DbSet<Location> Locations { get; set; }  
 
-        protected void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            User admin = new User("admin@gmail.com", "Admin123", AppStatics.AdminRole);
+            User admin = new User("admin@gmail.com", BCrypt.Net.BCrypt.HashPassword("Admin123"), AppStatics.AdminRole);
             modelBuilder.Entity<User>().HasData(admin);
         }
 

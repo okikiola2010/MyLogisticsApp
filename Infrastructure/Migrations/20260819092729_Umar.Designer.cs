@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260819024158_Umar")]
+    [Migration("20260819092729_Umar")]
     partial class Umar
     {
         /// <inheritdoc />
@@ -487,6 +487,19 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a2f9d0ec-1b68-4fbb-8178-813056a95fd7"),
+                            CreatedAt = new DateTime(2026, 8, 19, 9, 27, 28, 321, DateTimeKind.Utc).AddTicks(1597),
+                            CreatedBy = "a2f9d0ec-1b68-4fbb-8178-813056a95fd7",
+                            Email = "admin@gmail.com",
+                            HashPassword = "$2a$11$AyBJ/PIa1rYnjAMeeyCrX.Gun7E.CoeY5ElGEWE8uY9HPLJgcdb2a",
+                            IsDeleted = false,
+                            Role = "app_Admin",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Client", b =>

@@ -7,34 +7,31 @@ namespace Host.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientController(IClientService clientService) : ControllerBase
+    public class DeliveryManController(IDeliveryManService deliveryManService) : ControllerBase
     {
-        [HttpPost("Client/SignUp")]
-        public async Task<IActionResult> SignUp(AddClientRequestModel model)
+        [HttpPost("DeliveryMan")]
+        public async Task<IActionResult> AddDeliveryMan(AddDeliverManRequestModel model)
         {
-            var res = await clientService.AddClient(model);
+            var res = await deliveryManService.AddDeliveryMan(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-        [HttpGet("id/{id:guid}")]
+        [HttpGet("DeliveryMan/id/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var res = await clientService.GetClient(id);
+            var res = await deliveryManService.Get(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-
-        [HttpGet("Phonenumber")]
-        public async Task<IActionResult> Get(string  phonenumber)
+        [HttpGet("DeliveryMan/WorkId")]
+        public async Task<IActionResult> Get(string workId)
         {
-            var res = await clientService.GetClient(phonenumber);
+            var res = await deliveryManService.Get(workId);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-        [HttpGet]
+        [HttpGet("Delivery/AllDeliveryMen")]
         public async Task<IActionResult> GetAll()
         {
-            var res = await clientService.GetAll();
+            var res = await deliveryManService.GetAll();
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-
     }
 }
-

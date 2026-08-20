@@ -14,6 +14,7 @@ namespace Domain.Entities
         public User? User { get;  set; }
         public string FullName => $"{FirstName} {LastName}";
         public List<Notification> Notifications { get; set; } = [];
+        public List<DeliveryRequest> DeliveryRequests { get; set; } = [];
         private Client() { }
         public Client(string firstName, string lastName, Guid userId, string phoneNumber, string createdBy)
         {

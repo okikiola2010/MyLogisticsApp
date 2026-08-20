@@ -19,11 +19,11 @@ namespace Infrastructure.RepositoryImplementation
         {
             return await context.Deliveries.AsNoTracking().FirstOrDefaultAsync(d => d.Id == id);
         }
-
         public async Task<List<Delivery>> GetAll()
         {
             return await context.Deliveries.AsNoTracking().ToListAsync();
         }
+
         public async Task Update(Delivery delivery)
         {
             context.Deliveries.Update(delivery);

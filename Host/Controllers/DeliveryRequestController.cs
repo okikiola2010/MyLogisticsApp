@@ -9,10 +9,12 @@ namespace Host.Controllers
     [ApiController]
     public class DeliveryRequestController(IDeliveryRequestService deliveryRequestService) : ControllerBase
     {
+        [HttpPost("DeliveryRequest/Add")]
         public async Task<IActionResult> MakeRequest(AddDeliveryReqRequestModel model)
         {
             var res = await deliveryRequestService.CreateRequest(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
+        public 
     }
 }

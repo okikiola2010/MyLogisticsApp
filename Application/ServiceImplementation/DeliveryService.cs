@@ -10,6 +10,25 @@ namespace Application.ServiceImplementation
 {
     public class DeliveryService(IDeliveryRepository deliveryRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,INotificationRepository notificationRepository) : IDeliveryService
     {
+
+        public async Task<BaseResponse<List<Delivery>>> GetUndoneDeliveryManWork(Guid deliveryManId)
+        {
+            var man = await deliveryManRepository.Get(deliveryManId);
+            if (man == null)
+            {
+                return BaseResponse<List<Delivery>>.Fail("DeliverMan not found");
+            }
+            var deliveries = man.Deliveries.Where(x => !x.HasDelivered).ToList();
+            if (deliveries.Count == 0)
+            {
+                return BaseResponse<List<Delivery>>.Fail("DeliverMan not found");
+            }
+            if (deliveries.Count > 0)
+            {
+                return BaseResponse<List<Delivery>>.Sucess(deliveries);
+            }
+            return BaseResponse<List<Delivery>>.Fail();
+        }
         public async Task ProcessPendingDelivery()
         {
 

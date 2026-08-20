@@ -68,5 +68,34 @@ namespace Application.ServiceImplementation
             }
             return BaseResponse<AddDeliveryReqResponseModel?>.Fail();
         }
+        public async Task<BaseResponse<DeliveryRequest>> Get(Guid id)
+        {
+            var req = await deliveryRequestRepository.Get(id);
+            if(req == null)
+            {
+                return BaseResponse<DeliveryRequest>.Fail("No request found");
+
+            }
+            if(req != null)
+            {
+                return BaseResponse<DeliveryRequest>.Sucess(req);
+
+            }
+            return BaseResponse<DeliveryRequest>.Fail();
+        }
+        public async Task<BaseResponse<List<DeliveryRequest>>> GetCustomerRequests(Guid clientId)
+        {
+            var req = await deliveryRequestRepository.GetByCustomerId(clientId);
+            if (req.Count == 0)
+            {
+                return BaseResponse<List<DeliveryRequest>>.Fail("No Delivery Request Found");
+
+            }
+            if (req.Count > 0)
+            {
+                return BaseResponse<List<DeliveryRequest>>.Sucess(req);
+            }
+            return BaseResponse<List<DeliveryRequest>>.Fail();
+        }
     }
 }

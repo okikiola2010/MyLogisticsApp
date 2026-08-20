@@ -60,7 +60,7 @@ namespace Application.ServiceImplementation
             return BaseResponse<DeliverManDto>.Sucess(man.Adapt<DeliverManDto>());
         }
 
-
+        
 
         public string GetWorkId(string firstName, string lastName)
         {
@@ -75,7 +75,7 @@ namespace Application.ServiceImplementation
             list = list.Where(x => !x.IsDeleted).ToList();
             if (list.Count == 0)
             {
-                return BaseResponse<List<DeliverManDto>>.Fail("No Client Found");
+                return BaseResponse<List<DeliverManDto>>.Fail("No DeliveryMan Found");
             }
             return BaseResponse<List<DeliverManDto>>.Sucess(list.Adapt<List<DeliverManDto>>());
         }

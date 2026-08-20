@@ -15,20 +15,20 @@ namespace Host.Controllers
             var res = await clientService.AddClient(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-        [HttpGet("id/{id:guid}")]
+        [HttpGet("Client/Get/id/{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await clientService.GetClient(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
 
-        [HttpGet("Phonenumber")]
+        [HttpGet("Client/Get/Phonenumber")]
         public async Task<IActionResult> Get(string  phonenumber)
         {
             var res = await clientService.GetClient(phonenumber);
             return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
         }
-        [HttpGet]
+        [HttpGet("Client/Get/All")]
         public async Task<IActionResult> GetAll()
         {
             var res = await clientService.GetAll();

@@ -27,7 +27,7 @@ namespace Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            User admin = new User("admin@gmail.com", BCrypt.Net.BCrypt.HashPassword("Admin123"), AppStatics.AdminRole);
+            User admin = new User(AppStatics.AdminEmail, BCrypt.Net.BCrypt.HashPassword("Admin123"), AppStatics.AdminRole);
             modelBuilder.Entity<User>().HasData(admin);
         }
 

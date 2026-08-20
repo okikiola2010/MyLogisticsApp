@@ -16,7 +16,8 @@ namespace Domain.Entities
         public DateTime LastTimeOrdered { get; set; }
         public string MiniTime => GetMiniTime();
         public string FullName => $"{FirstName} {LastName}";
-        public List<Delivery> Deliveries { get; set; } = new List<Delivery>();
+        public List<Notification> UserNotifications { get; set; } = new List<Notification>();
+        public List<Delivery> DeliveryManDeliveries { get; set; } = new List<Delivery>();
         private DeliveryMan() { }
         public DeliveryMan(string firstName, string lastName, Guid userId,string createdBy)
         {

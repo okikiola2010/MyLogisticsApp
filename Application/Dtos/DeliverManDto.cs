@@ -20,6 +20,7 @@ namespace Application.Dtos
         public string MiniTime { get; set; } = default!;
         public DateTime LastTimeOrdered { get; set; }
         public string FullName => $"{FirstName} {LastName}";
+        public List<Delivery> DeliverManDeliveries { get; set; } = new List<Delivery>();
     }
     public record AddDeliverManRequestModel(string FirstName, string LastName, string Email, string Password, string CreatedBy);
     public record AddDeliverManResponseModel(Guid Id);

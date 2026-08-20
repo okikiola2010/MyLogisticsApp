@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class DeliveryService(IDeliveryRepository deliveryRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,INotificationRepository notificationRepository) : IDeliveryService
+    public class DeliveryService(IDeliveryRepository deliveryRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,INotificationRepository notificationRepository,IUserRepository userRepository) : IDeliveryService
     {
 
         public async Task<BaseResponse<List<Delivery>>> GetUndoneDeliveryManWork(Guid deliveryManId)
@@ -18,7 +19,7 @@ namespace Application.ServiceImplementation
             {
                 return BaseResponse<List<Delivery>>.Fail("DeliverMan not found");
             }
-            var deliveries = man.Deliveries.Where(x => !x.HasDelivered).ToList();
+            var deliveries = man.DeliveryManDeliveries.Where(x => !x.HasDelivered).ToList();
             if (deliveries.Count == 0)
             {
                 return BaseResponse<List<Delivery>>.Fail("DeliverMan not found");
@@ -33,7 +34,7 @@ namespace Application.ServiceImplementation
         {
 
             var list = await deliveryRepository.GetAll();
-            var pendingDeliveries = list.Where(x => x.IsAvailable).ToList();
+            var pendingDeliveries = list.Where(x => x.IsAvailable && !x.IsDeleted).ToList();
             var urgentPendingDeliveries = GetUrgentOne(pendingDeliveries);
             var nonUrgentPendingDeliveries = GetNonUrgentOne(pendingDeliveries);
             foreach (var item in urgentPendingDeliveries)
@@ -50,13 +51,19 @@ namespace Application.ServiceImplementation
                 if (FindLowest(dates).AddDays(2) <= DateTime.UtcNow)
                 {
                     var worker = await GetEarliestWorker();
+                    if(worker == null)
+                    {
+                        var admin = await userRepository.Get(AppStatics.AdminEmail);
+                        await notificationRepository.Add(new Notification("You have to add Delivery men as much as possible", admin!.Id, "System"));
+                        return;
+                    }
                     item.Update(item.HasDelivered, item.LgaId, false, worker.Id);
                     await deliveryRepository.Update(item);
                     await Assigned(worker);
                     await notificationRepository.Add(new Notification($"You have assigned to a delivery,Kindly Go and check.", worker.UserId, "System"));
                     foreach (var req in item.Requests)
                     {
-                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.",req.Customer!.UserId,"System"));
+                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.",req.Client!.UserId,"System"));
                     }
                 }
             }
@@ -71,7 +78,7 @@ namespace Application.ServiceImplementation
                     await notificationRepository.Add(new Notification($"You have assigned to a delivery,Kindly Go and check.", worker.UserId, "System"));
                     foreach (var req in item.Requests)
                     {
-                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.", req.Customer!.UserId, "System"));
+                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.", req.Client!.UserId, "System"));
                     }
                 }
             }

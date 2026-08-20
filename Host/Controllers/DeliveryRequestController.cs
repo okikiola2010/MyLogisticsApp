@@ -13,8 +13,20 @@ namespace Host.Controllers
         public async Task<IActionResult> MakeRequest(AddDeliveryReqRequestModel model)
         {
             var res = await deliveryRequestService.CreateRequest(model);
-            return res.IsSuccess ? Ok(res) : BadRequest(res.Message);
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        public 
+        [HttpPost("DeliveryRequest/Get/{id:guid}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var res = await deliveryRequestService.Get(id);
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
+        }
+        [HttpPost("DeliveryRequest/GetCustomerRequests")]
+        public async Task<IActionResult> GetRequestsByCustomerId(Guid id)
+        {
+            var res = await deliveryRequestService.GetCustomerRequests(id);
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
+        }
+
     }
 }

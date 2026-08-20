@@ -21,7 +21,7 @@ namespace Infrastructure.RepositoryImplementation
         }                                    
         public async Task<List<DeliveryRequest>> GetByCustomerId(Guid customerId)
         {                                    
-            return await context.DeliveryRequests.AsNoTracking().Where(x => x.CustomerId == customerId).ToListAsync();
+            return await context.DeliveryRequests.AsNoTracking().Where(x => x.ClientId == customerId).ToListAsync();
         }                                    
                                              
         public async Task<List<DeliveryRequest>> GetAll()

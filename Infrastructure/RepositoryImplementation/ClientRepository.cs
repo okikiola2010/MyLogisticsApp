@@ -22,17 +22,17 @@ namespace Infrastructure.RepositoryImplementation
 
         public async Task<Client?> Get(string phoneNumber)
         {
-            return await context.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.PhoneNumber == phoneNumber);
+            return await context.Clients.AsNoTracking().Include(c => c.User).Include(c => c.ClientDeliveryRequests).Include(c => c.UserNotifications).FirstOrDefaultAsync(c => c.PhoneNumber == phoneNumber);
         }
 
         public async Task<List<Client>> GetAll()
         {
-            return await context.Clients.AsNoTracking().ToListAsync();
+            return await context.Clients.AsNoTracking().Include(c => c.User).Include(c => c.ClientDeliveryRequests).Include(c => c.UserNotifications).ToListAsync();
         }
 
         public async Task<Client?> GetByUserId(Guid userId)
         {
-            return await context.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId);
+            return await context.Clients.AsNoTracking().Include(c => c.User).Include(c => c.ClientDeliveryRequests).Include(c => c.UserNotifications).FirstOrDefaultAsync(c => c.UserId == userId);
 
         }
         public async Task Update(Client client)

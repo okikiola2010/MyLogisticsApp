@@ -24,7 +24,7 @@ namespace Application.ServiceImplementation
             if (user == null)
             {
 
-                user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.ClientRole);
+                user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.DeliveryManRole);
                 DeliveryMan deliveryMan = new DeliveryMan(model.FirstName, model.LastName, user.Id, user.Id.ToString());
                 var deliveryMen = await deliveryManRepository.GetAll();
 

@@ -7,8 +7,8 @@ namespace Domain.Entities
 {
     public  class DeliveryRequest:BaseEntity
     {
-        public Guid CustomerId {  get; set; }
-        public Client? Customer {  get; set; }
+        public Guid ClientId {  get; set; }
+        public Client? Client {  get; set; }
         public bool IsUrgent { get; set; }
         public bool IsReady { get; set; } = default!;
         public Guid PickupLocationId { get; set; } = default!;
@@ -23,7 +23,7 @@ namespace Domain.Entities
             DeliveryId  = deliveryId;
             PickupLocationId = pickupLocationId;
             DeliveryLocationId = deliveryLocationId;
-            CustomerId = customerId;
+            ClientId = customerId;
             IsUrgent = isUrgent;
             CreatedBy = createdBy;
         }

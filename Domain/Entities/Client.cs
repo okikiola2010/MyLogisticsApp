@@ -13,8 +13,8 @@ namespace Domain.Entities
         public Guid UserId { get;  set; }
         public User? User { get;  set; }
         public string FullName => $"{FirstName} {LastName}";
-        public List<Notification> Notifications { get; set; } = [];
-        public List<DeliveryRequest> DeliveryRequests { get; set; } = [];
+        public List<Notification> UserNotifications { get; set; } = [];
+        public List<DeliveryRequest> ClientDeliveryRequests { get; set; } = [];
         private Client() { }
         public Client(string firstName, string lastName, Guid userId, string phoneNumber, string createdBy)
         {

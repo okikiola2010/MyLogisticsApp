@@ -15,6 +15,8 @@ namespace Application.Dtos
         public string LastName { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public Guid UserId { get; set; }
+        public List<DeliveryRequest> ClientDeliveryRequests { get; set; } = [];
+        public List<Notification> UserNotifications { get; set; } = [];
         public string FullName => $"{FirstName} {LastName}";
 
     }

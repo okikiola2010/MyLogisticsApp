@@ -17,5 +17,5 @@ namespace Application.Dtos
         public string Role { get; set; } = default!;
     }
     public record LoginRequestModel(string Email, string Password);
-    public record LoginResponseModel(Guid Id, string Role);
+    public record LoginResponseModel(Guid Id, string Role,string token);
 }

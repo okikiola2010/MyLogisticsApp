@@ -4,6 +4,7 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -11,7 +12,7 @@ using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class MessageService(IMessageRepository messageRepository,IUserRepository userRepository,IDeliveryRequestRepository deliveryRequestRepository,IClientRepository clientRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork) : IMessageService
+    public class MessageService(IMessageRepository messageRepository,IUserRepository userRepository,IDeliveryRequestRepository deliveryRequestRepository,IClientRepository clientRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IHubContext<MessageHub> hubContext) : IMessageService
     {
         public async Task<BaseResponse<AddMessageResponseModel>> AddMessage(AddMessageRequestModel message)
         {
@@ -35,6 +36,7 @@ namespace Application.ServiceImplementation
                     var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
                     await messageRepository.Add(m);
                     await unitOfWork.SaveChanges();
+                    await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
                     return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
 
                 }
@@ -50,6 +52,8 @@ namespace Application.ServiceImplementation
                     var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
                     await messageRepository.Add(m);
                     await unitOfWork.SaveChanges();
+                    await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
+
                     return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
 
                 }
@@ -68,6 +72,7 @@ namespace Application.ServiceImplementation
                 var messag = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
                 await messageRepository.Add(messag);
                 await unitOfWork.SaveChanges();
+                await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
 
                 return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(messag.Id));
 

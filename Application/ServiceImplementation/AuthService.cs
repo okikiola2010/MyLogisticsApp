@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class AuthService(IUserRepository userRepository) : IAuthService
+    public class AuthService(IUserRepository userRepository,IJwtService jwtService) : IAuthService
     {
         public async Task<BaseResponse<LoginResponseModel>> Login(LoginRequestModel model)
         {
@@ -27,7 +27,7 @@ namespace Application.ServiceImplementation
             if(user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.HashPassword) && !user.IsDeleted)
             {
                 AppStatics.CurrentLoginUser = user;
-                return BaseResponse<LoginResponseModel>.Sucess(new LoginResponseModel(user.Id, user.Role), "Login Successful.....");
+                return BaseResponse<LoginResponseModel>.Sucess(new LoginResponseModel(user.Id, user.Role,jwtService.GenerateToken(user)), "Login Successful.....");
             }
             return BaseResponse<LoginResponseModel>.Fail();
         }

@@ -19,6 +19,6 @@ namespace Application.Dtos
         public User? Reciever { get; set; }
         public string Context { get; set; } = default!;
     }
-    public record AddMessageRequestModel(string SenderEmail, string RecieverEmail);
+    public record AddMessageRequestModel(Guid SenderUserId,Guid RecieverUserId,string Content);
     public record AddMessageResponseModel(Guid Id);
 }

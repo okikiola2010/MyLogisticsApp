@@ -19,6 +19,10 @@ namespace Infrastructure.RepositoryImplementation
         {
             return await context.DeliveryMen.AsNoTracking().Include(x => x.DeliveryManDeliveries).Include(x => x.UserNotifications).Include(d => d.User).FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<DeliveryMan?> GetByUserId(Guid userId)
+        {
+            return await context.DeliveryMen.AsNoTracking().Include(x => x.DeliveryManDeliveries).Include(x => x.UserNotifications).Include(d => d.User).FirstOrDefaultAsync(x => x.UserId == userId);
+        }
 
         public async Task<DeliveryMan?> Get(string workId)
         {

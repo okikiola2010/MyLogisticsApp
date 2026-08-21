@@ -30,9 +30,9 @@ namespace Infrastructure.RepositoryImplementation
             return await _context.Messages.AsNoTracking().ToListAsync();
         }
 
-        public async Task<List<Message>> GetMessages(string senderEmail, string recieverEmail)
+        public async Task<List<Message>> GetMessages(Guid senderUserId, Guid recieverUserId)
         {
-            return await _context.Messages.AsNoTracking().Where(m => m.SenderEmail == senderEmail && m.RecieverEmail == recieverEmail).ToListAsync();
+            return await _context.Messages.AsNoTracking().Where(m => (m.SenderUserId == senderUserId && m.RecieverUserId == recieverUserId) || (m.SenderUserId == recieverUserId && m.RecieverUserId == senderUserId)).ToListAsync();
         }
         public async Task Update(Message message)
         {

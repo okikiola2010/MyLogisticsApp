@@ -9,25 +9,25 @@ namespace Host.Controllers
     [ApiController]
     public class DeliveryManController(IDeliveryManService deliveryManService) : ControllerBase
     {
-        [HttpPost("DeliveryMan")]
+        [HttpPost("Add")]
         public async Task<IActionResult> AddDeliveryMan(AddDeliverManRequestModel model)
         {
             var res = await deliveryManService.AddDeliveryMan(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("DeliveryMan/id/{id}")]
+        [HttpGet("Get/id/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await deliveryManService.Get(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("DeliveryMan/WorkId")]
+        [HttpGet("WorkId")]
         public async Task<IActionResult> Get(string workId)
         {
             var res = await deliveryManService.Get(workId);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("Delivery/AllDeliveryMen")]
+        [HttpGet("AllDeliveryMen")]
         public async Task<IActionResult> GetAll()
         {
             var res = await deliveryManService.GetAll();

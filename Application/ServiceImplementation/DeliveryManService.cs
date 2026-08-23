@@ -5,39 +5,63 @@ using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class DeliveryManService(IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IUserRepository userRepository) : IDeliveryManService
+    public class DeliveryManService(IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor,AppFileStreamer streamer) : IDeliveryManService
     {
         public async Task<BaseResponse<AddDeliverManResponseModel>> AddDeliveryMan(AddDeliverManRequestModel model)
         {
-            var user = await userRepository.Get(model.Email);
-            if (user != null)
+            try
             {
-                return BaseResponse<AddDeliverManResponseModel>.Fail("An account with this email exists");
-            }
-           
-            if (user == null)
-            {
-
-                user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.DeliveryManRole);
-                DeliveryMan deliveryMan = new DeliveryMan(model.FirstName, model.LastName, user.Id, user.Id.ToString());
-                var deliveryMen = await deliveryManRepository.GetAll();
-
-                while(deliveryMen.Any(x => x.WorkId == deliveryMan.WorkId))
+                var user = await userRepository.Get(model.Email);
+                if (user != null)
                 {
-                    deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName, GetWorkId(deliveryMan.FirstName, deliveryMan.LastName), user.Id, user.Id.ToString(), deliveryMan.IsDeleted, deliveryMan.LastTimeOrdered);
+                    return BaseResponse<AddDeliverManResponseModel>.Fail("An account with this email exists");
                 }
-                await userRepository.Add(user);
-                await deliveryManRepository.Add(deliveryMan);
-                await unitOfWork.SaveChanges();
-                return BaseResponse<AddDeliverManResponseModel>.Sucess(new AddDeliverManResponseModel(deliveryMan.Id));
+                var userIdString = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString))
+                {
+                    return BaseResponse<AddDeliverManResponseModel>.Fail("User not authenticated");
+                }
+                Guid userId = Guid.Parse(userIdString);
+                User? currentLoginUser = await userRepository.Get(userId);
+                if (user == null)
+                {
+                    if (currentLoginUser == null)
+                    {
+                        return BaseResponse<AddDeliverManResponseModel>.Fail("User not found");
+                    }
+                    if (currentLoginUser.Role != AppStatics.AdminRole)
+                    {
+                        return BaseResponse<AddDeliverManResponseModel>.Fail("Only admin can add deliveryman");
+                    }
+                    user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.DeliveryManRole);
+                    var filestring = await streamer.FileStreamApp(model.Profile);
+                    DeliveryMan deliveryMan = new DeliveryMan(model.FirstName, model.LastName, user.Id, userId.ToString(), filestring);
+                    var deliveryMen = await deliveryManRepository.GetAll();
+
+                    while (deliveryMen.Any(x => x.WorkId == deliveryMan.WorkId))
+                    {
+                        deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName, GetWorkId(deliveryMan.FirstName, deliveryMan.LastName), user.Id, user.Id.ToString(), deliveryMan.IsDeleted, deliveryMan.LastTimeOrdered);
+                    }
+
+                    await userRepository.Add(user);
+                    await deliveryManRepository.Add(deliveryMan);
+                    await unitOfWork.SaveChanges();
+                    return BaseResponse<AddDeliverManResponseModel>.Sucess(new AddDeliverManResponseModel(deliveryMan.Id));
+                }
+                return BaseResponse<AddDeliverManResponseModel>.Fail();
             }
-            return BaseResponse<AddDeliverManResponseModel>.Fail();
+            catch (Exception ex) {
+                return BaseResponse<AddDeliverManResponseModel>.Fail(ex.Message);
+            }
+
         }
 
         public async Task<BaseResponse<DeliverManDto>> Get(Guid id)

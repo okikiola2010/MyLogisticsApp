@@ -47,6 +47,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("ProfileString")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -172,6 +176,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("LastTimeOrdered")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("ProfileString")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -198,15 +205,15 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DateExpected")
                         .HasColumnType("datetime(6)");
@@ -237,7 +244,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("DeliveryId");
 
@@ -346,18 +353,16 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("RecieverEmail")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<Guid?>("RecieverId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("SenderEmail")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("RecieverUserId")
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid?>("SenderId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("SenderUserId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -395,6 +400,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("DeliveryManId")
+                        .HasColumnType("char(36)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -410,6 +418,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("DeliveryManId");
 
                     b.HasIndex("UserId");
 
@@ -488,11 +498,11 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a2f9d0ec-1b68-4fbb-8178-813056a95fd7"),
-                            CreatedAt = new DateTime(2026, 8, 19, 9, 27, 28, 321, DateTimeKind.Utc).AddTicks(1597),
-                            CreatedBy = "a2f9d0ec-1b68-4fbb-8178-813056a95fd7",
+                            Id = new Guid("976e2bb9-df91-4618-bee6-833b9e665b04"),
+                            CreatedAt = new DateTime(2026, 8, 23, 6, 42, 4, 914, DateTimeKind.Utc).AddTicks(2380),
+                            CreatedBy = "976e2bb9-df91-4618-bee6-833b9e665b04",
                             Email = "admin@gmail.com",
-                            HashPassword = "$2a$11$AyBJ/PIa1rYnjAMeeyCrX.Gun7E.CoeY5ElGEWE8uY9HPLJgcdb2a",
+                            HashPassword = "$2a$11$ErXJ5Cy3k8yRCCUtjRcrluSs89iqe7A511w0HDv.4LnNpuM.857iq",
                             IsDeleted = false,
                             Role = "app_Admin",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -524,7 +534,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Delivery", b =>
                 {
                     b.HasOne("Domain.Entities.DeliveryMan", "DeliveryMan")
-                        .WithMany()
+                        .WithMany("DeliveryManDeliveries")
                         .HasForeignKey("DeliveryManId");
 
                     b.HasOne("Domain.Entities.Lga", "Lga")
@@ -551,9 +561,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.DeliveryRequest", b =>
                 {
-                    b.HasOne("Domain.Entities.Client", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
+                    b.HasOne("Domain.Entities.Client", "Client")
+                        .WithMany("ClientDeliveryRequests")
+                        .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -575,7 +585,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("Client");
 
                     b.Navigation("Delivery");
 
@@ -640,8 +650,12 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.HasOne("Domain.Entities.Client", null)
-                        .WithMany("Notifications")
+                        .WithMany("UserNotifications")
                         .HasForeignKey("ClientId");
+
+                    b.HasOne("Domain.Entities.DeliveryMan", null)
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("DeliveryManId");
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany()
@@ -654,12 +668,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Client", b =>
                 {
-                    b.Navigation("Notifications");
+                    b.Navigation("ClientDeliveryRequests");
+
+                    b.Navigation("UserNotifications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Delivery", b =>
                 {
                     b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DeliveryMan", b =>
+                {
+                    b.Navigation("DeliveryManDeliveries");
+
+                    b.Navigation("UserNotifications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lga", b =>

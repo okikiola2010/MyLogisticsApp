@@ -11,33 +11,43 @@ using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class ClientService(IClientRepository clientRepository,IUserRepository userRepository,IUnitOfWork unitOfWork) : IClientService
+    public class ClientService(IClientRepository clientRepository,IUserRepository userRepository,IUnitOfWork unitOfWork,AppFileStreamer appFileStreamer) : IClientService
     {
         public async Task<BaseResponse<AddClientResponseModel>> AddClient(AddClientRequestModel model)
         {
-            var user = await userRepository.Get(model.Email);
-            var client = await clientRepository.Get(model.PhoneNumber); 
-            if(user != null)
+            try
             {
-                return BaseResponse<AddClientResponseModel>.Fail("An account with this email exists");
+                var user = await userRepository.Get(model.Email);
+                var client = await clientRepository.Get(model.PhoneNumber);
+                if (user != null)
+                {
+                    return BaseResponse<AddClientResponseModel>.Fail("An account with this email exists");
+                }
+                if (client != null)
+                {
+                    return BaseResponse<AddClientResponseModel>.Fail("An account with this phonenumber exists");
+                }
+                if (client == null && user == null)
+                {
+                    var file = await appFileStreamer.FileStreamApp(model.Profile);
+                    if(file == null)
+                    {
+                        return BaseResponse<AddClientResponseModel>.Fail("You must upload your profile pics");
+                    }
+                    user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.ClientRole);
+                    client = new Client(model.FirstName, model.LastName, user.Id, model.PhoneNumber, user.Id.ToString(),file);
+                    await userRepository.Add(user);
+                    await clientRepository.Add(client);
+                    await unitOfWork.SaveChanges();
+                    return BaseResponse<AddClientResponseModel>.Sucess(new AddClientResponseModel(client.Id));
+                }
+                return BaseResponse<AddClientResponseModel>.Fail();
             }
-            if (client != null)
+            catch (Exception ex)
             {
-                return BaseResponse<AddClientResponseModel>.Fail("An account with this phonenumber exists");
+                return BaseResponse<AddClientResponseModel>.Fail(ex.Message);
             }
-            if(client == null && user == null)
-            {
-
-                user = new User(model.Email,BCrypt.Net.BCrypt.HashPassword(model.Password),AppStatics.ClientRole);
-                client = new Client(model.FirstName, model.LastName,user.Id,model.PhoneNumber,user.Id.ToString());
-                await userRepository.Add(user);
-                await clientRepository.Add(client);
-                await unitOfWork.SaveChanges();
-                return BaseResponse<AddClientResponseModel>.Sucess(new AddClientResponseModel(client.Id));
-            }
-            return BaseResponse<AddClientResponseModel>.Fail();
         }
-
 
         public async Task<BaseResponse<ClientDto>> GetClient(Guid id)
         {
@@ -48,6 +58,7 @@ namespace Application.ServiceImplementation
             }
             return BaseResponse<ClientDto>.Sucess(client.Adapt<ClientDto>(), "Sucessfully found");
         }
+
 
         public async Task<BaseResponse<ClientDto>> GetClient(string phonenumber)
         {

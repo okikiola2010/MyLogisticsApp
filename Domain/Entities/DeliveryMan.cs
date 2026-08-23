@@ -10,6 +10,7 @@ namespace Domain.Entities
     {
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
+        public string? ProfileString { get; set; } = default!;
         public Guid UserId { get; set; }
         public User? User { get; set; }
         public string WorkId { get; set; } = default!;
@@ -19,13 +20,14 @@ namespace Domain.Entities
         public List<Notification> UserNotifications { get; set; } = new List<Notification>();
         public List<Delivery> DeliveryManDeliveries { get; set; } = new List<Delivery>();
         private DeliveryMan() { }
-        public DeliveryMan(string firstName, string lastName, Guid userId,string createdBy)
+        public DeliveryMan(string firstName, string lastName, Guid userId,string createdBy,string? profileSring)
         {
             FirstName = firstName;
             LastName = lastName;
             UserId = userId;
             CreatedBy = createdBy;
             LastTimeOrdered = CreatedAt;
+            ProfileString = profileSring;
             WorkId = GenerateWorkId(firstName, lastName);
         }
         public string GetMiniTime()

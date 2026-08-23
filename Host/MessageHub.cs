@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application
+namespace Hosts
 {
     public class MessageHub:Hub
     {

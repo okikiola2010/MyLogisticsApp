@@ -3,26 +3,53 @@ using Application.Interfaces;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
 using Domain.Entities;
+using Mapster;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class StateService(IStateRepository stateRepository,IUnitOfWork unitOfWork) : IStateService
+    public class StateService(IStateRepository stateRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor) : IStateService
     {
         public async Task<BaseResponse<AddStateResponseModel>> AddState(AddStateRequestModel model)
         {
-            var state = await stateRepository.Get(CapitalizeFirstLetter(model.Name));
-            if (state == null)
+            try
             {
-                return BaseResponse<AddStateResponseModel>.Fail("State name exists");
+                string? userIdString = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString))
+                {
+                    return BaseResponse<AddStateResponseModel>.Fail("User not authenticated");
+                }
+                var userId = Guid.Parse(userIdString);
+                var currentLogiUser = await userRepository.Get(userId);
+                if (currentLogiUser == null)
+                {
+                    return BaseResponse<AddStateResponseModel>.Fail("User not found");
+                }
+
+                var state = await stateRepository.Get(CapitalizeFirstLetter(model.Name));
+                if (state != null)
+                {
+                    return BaseResponse<AddStateResponseModel>.Fail("State name exists");
+                }
+
+                if (currentLogiUser!.Role != AppStatics.AdminRole)
+                {
+                    return BaseResponse<AddStateResponseModel>.Fail("Only Admin can add state");
+                }
+
+                state = new State(CapitalizeFirstLetter(model.Name), userId.ToString());
+                await stateRepository.Add(state);
+                await unitOfWork.SaveChanges();
+                return BaseResponse<AddStateResponseModel>.Sucess(new AddStateResponseModel(state.Id), "Sucessfully Added");
+            }
+            catch (Exception ex) {
+                throw new Exception(ex.Message);
             }
 
-            state = new State(CapitalizeFirstLetter(model.Name), AppStatics.CurrentLoginUser.Id.ToString());
-            await stateRepository.Add(state);
-            await unitOfWork.SaveChanges();
-            return BaseResponse<AddStateResponseModel>.Sucess(new AddStateResponseModel(state.Id), "Sucessfully Added");
         }
         private string CapitalizeFirstLetter(string name)
         {

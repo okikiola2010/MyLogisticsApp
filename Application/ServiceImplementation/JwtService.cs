@@ -18,7 +18,7 @@ namespace Application.ServiceImplementation
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Role!)
+                new Claim(ClaimTypes.Role, user.Role!)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
@@ -26,7 +26,7 @@ namespace Application.ServiceImplementation
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

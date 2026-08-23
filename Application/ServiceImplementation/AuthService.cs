@@ -26,7 +26,6 @@ namespace Application.ServiceImplementation
             }
             if(user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.HashPassword) && !user.IsDeleted)
             {
-                AppStatics.CurrentLoginUser = user;
                 return BaseResponse<LoginResponseModel>.Sucess(new LoginResponseModel(user.Id, user.Role,jwtService.GenerateToken(user)), "Login Successful.....");
             }
             return BaseResponse<LoginResponseModel>.Fail();

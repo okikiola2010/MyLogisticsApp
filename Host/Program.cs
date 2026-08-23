@@ -1,4 +1,5 @@
 
+using Application;
 using Application.Interfaces;
 using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
@@ -12,6 +13,7 @@ using Infrastructure.RepositoryImplementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 
 namespace Host
@@ -30,11 +32,33 @@ namespace Host
             builder.Services.AddDbContext<AppDbContext>(config => config.UseMySQL(builder.Configuration.GetConnectionString("Default")!));
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token"
+                });
+
+                options.AddSecurityRequirement(document =>
+                    new OpenApiSecurityRequirement
+                    {
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] =
+                            Array.Empty<string>().ToList()
+                    });
+            });
             builder.Services.AddScoped<UserRepository, UserRepository>();
-            
+            builder.Services.AddSignalR();
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<AppFileStreamer>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IDeliveryManRepository,DeliverManRepository>();
             builder.Services.AddScoped<IStateRepository, StateRepository>();
             builder.Services.AddScoped<ILgaRepository, LgaRepository>();
@@ -52,6 +76,8 @@ namespace Host
             builder.Services.AddScoped<ICommunityService,CommunityService>();
             builder.Services.AddScoped<IDeliveryService, DeliveryService>();
             builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
+            //builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddHostedService<DeliveryBackGroundService>();
 
 
@@ -87,11 +113,10 @@ namespace Host
                 app.UseSwaggerUI();
                
             }
-            app.MapControllers();
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 

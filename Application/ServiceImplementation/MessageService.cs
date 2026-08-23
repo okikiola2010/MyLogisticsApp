@@ -10,74 +10,81 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace Application.ServiceImplementation
+namespace Application
 {
     public class MessageService(IMessageRepository messageRepository,IUserRepository userRepository,IDeliveryRequestRepository deliveryRequestRepository,IClientRepository clientRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IHubContext<MessageHub> hubContext) : IMessageService
     {
         public async Task<BaseResponse<AddMessageResponseModel>> AddMessage(AddMessageRequestModel message)
         {
-            var sender = await userRepository.Get(message.SenderUserId);
-            var reciever = await userRepository.Get(message.RecieverUserId);
-            if(sender == null || reciever == null)
+            try
             {
-                return BaseResponse<AddMessageResponseModel>.Fail("User not found");
-            }
-            if(sender.Role == reciever.Role)
-            {
-                return BaseResponse<AddMessageResponseModel>.Fail("The application does not allow users with the same role to message each other.");
-            }
-            if(sender.Role == AppStatics.ClientRole && reciever.Role == AppStatics.DeliveryManRole)
-            {
-                var client = await clientRepository.GetByUserId(sender.Id);
-                var deliveryMan = await deliveryManRepository.GetByUserId(reciever.Id);
-                var requessts = await deliveryRequestRepository.GetByCustomerId(client!.UserId);
-                if(requessts.Any(x => x.Delivery.DeliveryManId == deliveryMan!.Id && !x.Delivery.HasDelivered))
+                var sender = await userRepository.Get(message.SenderUserId);
+                var reciever = await userRepository.Get(message.RecieverUserId);
+                if (sender == null || reciever == null)
                 {
-                    var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
-                    await messageRepository.Add(m);
+                    return BaseResponse<AddMessageResponseModel>.Fail("User not found");
+                }
+                if (sender.Role == reciever.Role)
+                {
+                    return BaseResponse<AddMessageResponseModel>.Fail("The application does not allow users with the same role to message each other.");
+                }
+                if (sender.Role == AppStatics.ClientRole && reciever.Role == AppStatics.DeliveryManRole)
+                {
+                    var client = await clientRepository.GetByUserId(sender.Id);
+                    var deliveryMan = await deliveryManRepository.GetByUserId(reciever.Id);
+                    var requessts = await deliveryRequestRepository.GetByCustomerId(client!.UserId);
+                    if (requessts.Any(x => x.Delivery.DeliveryManId == deliveryMan!.Id && !x.Delivery.HasDelivered))
+                    {
+                        var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
+                        await messageRepository.Add(m);
+                        await unitOfWork.SaveChanges();
+                        await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
+                        return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
+
+                    }
+                    return BaseResponse<AddMessageResponseModel>.Fail("The system doesn't allow message btw users if there isn't a deal btw them");
+                }
+                if (sender.Role == AppStatics.DeliveryManRole && reciever.Role == AppStatics.ClientRole)
+                {
+                    var client = await clientRepository.GetByUserId(reciever.Id);
+                    var deliveryMan = await deliveryManRepository.GetByUserId(sender.Id);
+                    var requessts = await deliveryRequestRepository.GetByCustomerId(client!.UserId);
+                    if (requessts.Any(x => x.Delivery.DeliveryManId == deliveryMan!.Id && !x.Delivery.HasDelivered))
+                    {
+                        var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
+                        await messageRepository.Add(m);
+                        await unitOfWork.SaveChanges();
+                        await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
+
+                        return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
+
+                    }
+                    return BaseResponse<AddMessageResponseModel>.Fail("The system doesn't allow message btw users if there isn't a deal btw them");
+                }
+                if (sender.Role == AppStatics.AdminRole && (reciever.Role == AppStatics.DeliveryManRole || reciever.Role == AppStatics.ClientRole))
+                {
+                    var messag = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
+                    await messageRepository.Add(messag);
                     await unitOfWork.SaveChanges();
-                    await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
-                    return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
+
+                    return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(messag.Id));
+                }
+                if (reciever.Role == AppStatics.AdminRole && (sender.Role == AppStatics.DeliveryManRole || sender.Role == AppStatics.ClientRole))
+                {
+                    var messag = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
+                    await messageRepository.Add(messag);
+                    await unitOfWork.SaveChanges();
+                    await hubContext.Clients.User(messag.RecieverUserId.ToString()).SendAsync("ReceiveMessage", messag);
+
+                    return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(messag.Id));
 
                 }
-                return BaseResponse<AddMessageResponseModel>.Fail("The system doesn't allow message btw users if there isn't a deal btw them");
+                return BaseResponse<AddMessageResponseModel>.Fail();
             }
-            if (sender.Role == AppStatics.DeliveryManRole && reciever.Role == AppStatics.ClientRole)
+            catch (Exception ex)
             {
-                var client = await clientRepository.GetByUserId(reciever.Id);
-                var deliveryMan = await deliveryManRepository.GetByUserId(sender.Id);
-                var requessts = await deliveryRequestRepository.GetByCustomerId(client!.UserId);
-                if (requessts.Any(x => x.Delivery.DeliveryManId == deliveryMan!.Id && !x.Delivery.HasDelivered))
-                {
-                    var m = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
-                    await messageRepository.Add(m);
-                    await unitOfWork.SaveChanges();
-                    await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
-
-                    return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(m.Id));
-
-                }
-                return BaseResponse<AddMessageResponseModel>.Fail("The system doesn't allow message btw users if there isn't a deal btw them");
+                return BaseResponse<AddMessageResponseModel>.Fail(ex.Message);
             }
-            if(sender.Role == AppStatics.AdminRole && (reciever.Role == AppStatics.DeliveryManRole || reciever.Role == AppStatics.ClientRole))
-            {
-                var messag = new Message(message.Content,sender.Id,reciever.Id, sender.Id.ToString());
-                await messageRepository.Add(messag);
-                await unitOfWork.SaveChanges();
-
-                return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(messag.Id));
-            }
-            if (reciever.Role == AppStatics.AdminRole && (sender.Role == AppStatics.DeliveryManRole || sender.Role == AppStatics.ClientRole))
-            {
-                var messag = new Message(message.Content, sender.Id, reciever.Id, sender.Id.ToString());
-                await messageRepository.Add(messag);
-                await unitOfWork.SaveChanges();
-                await hubContext.Clients.User(m.RecieverUserId.ToString()).SendAsync("ReceiveMessage", m);
-
-                return BaseResponse<AddMessageResponseModel>.Sucess(new AddMessageResponseModel(messag.Id));
-
-            }
-            return BaseResponse<AddMessageResponseModel>.Fail();
 
         }
         public async Task<BaseResponse<List<string>>> GetClientMessageLink(Guid clientId)
@@ -178,6 +185,7 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<List<Message>>> GetBtwTwoUsers(Guid firstPerson,Guid secondPerson)
         {
             var messages = await messageRepository.GetMessages(firstPerson, secondPerson);
+            
             if(messages.Count > 0)
             {
                 return BaseResponse<List<Message>>.Sucess(messages);

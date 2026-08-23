@@ -9,9 +9,11 @@ namespace Host.Controllers
     [ApiController]
     public class MessageController(IMessageService messageService) : ControllerBase
     {
-        public IActionResult Message(AddMessageRequestModel model)
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> Message(AddMessageRequestModel model)
         {
-
+            var res = await messageService.AddMessage(model);
+            return res.IsSuccess ? Ok(res ) : BadRequest(res); 
         }
     }
 }

@@ -18,12 +18,12 @@ namespace Domain.Entities
         public Guid DeliveryId { get; set; }
         public Delivery Delivery { get; set; } = default!;
         public DateTime DateExpected {  get; set; }
-        public DeliveryRequest(Guid deliveryId, Guid pickupLocationId, Guid deliveryLocationId, Guid customerId, string createdBy,bool isUrgent)
+        public DeliveryRequest(Guid deliveryId, Guid pickupLocationId, Guid deliveryLocationId, Guid clientId, string createdBy,bool isUrgent)
         {
             DeliveryId  = deliveryId;
             PickupLocationId = pickupLocationId;
             DeliveryLocationId = deliveryLocationId;
-            ClientId = customerId;
+            ClientId = clientId;
             IsUrgent = isUrgent;
             CreatedBy = createdBy;
         }

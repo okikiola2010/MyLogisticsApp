@@ -4,17 +4,26 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class DeliveryRequestService(IDeliveryRequestRepository deliveryRequestRepository,IDeliveryRepository deliveryRepository,ICommunityRepository communityRepository,IClientRepository clientRepository,ILocationRepository locationRepository,IUnitOfWork unitOfWork) : IDeliveryRequestService
+    public class DeliveryRequestService(IDeliveryRequestRepository deliveryRequestRepository,IDeliveryRepository deliveryRepository,ICommunityRepository communityRepository,IClientRepository clientRepository,ILocationRepository locationRepository,IUnitOfWork unitOfWork,IUserRepository userRepository, IHttpContextAccessor httpContextAccessor) : IDeliveryRequestService
     {
         public async Task<BaseResponse<AddDeliveryReqResponseModel?>> CreateRequest(AddDeliveryReqRequestModel model)
         {
-            if (AppStatics.CurrentLoginUser == null)
+            string? userIdString = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return BaseResponse<AddDeliveryReqResponseModel?>.Fail("User not authenticated");
+            }
+            Guid userId = Guid.Parse(userIdString!);
+            var curentLoginUser = await userRepository.Get(userId);
+            if (curentLoginUser == null)
             {
                 return BaseResponse<AddDeliveryReqResponseModel?>.Fail("User not found");
             }
@@ -28,11 +37,11 @@ namespace Application.ServiceImplementation
             var delivery = list.FirstOrDefault(d => d.IsAvailable && !d.HasDelivered && d.LgaId == commDev.LgaId);
             if(delivery == null)
             {
-                Client? cl = await clientRepository.GetByUserId(AppStatics.CurrentLoginUser.Id);
-                Location locationDev = new Location(commDev.Lga!.StateId, commDev.LgaId, commDev.Id,AppStatics.CurrentLoginUser.Id.ToString());
-                Location locationPick = new Location(commPick.Lga!.StateId, commPick.LgaId, commPick.Id,AppStatics.CurrentLoginUser.Id.ToString());
+                Client? cl = await clientRepository.GetByUserId(userId);
+                Location locationDev = new Location(commDev.Lga!.StateId, commDev.LgaId, commDev.Id,userId.ToString());
+                Location locationPick = new Location(commPick.Lga!.StateId, commPick.LgaId, commPick.Id,userId.ToString());
                 delivery = new Delivery(commDev.LgaId);
-                DeliveryRequest request = new DeliveryRequest(delivery.Id, locationPick.Id, locationDev.Id, cl!.Id, AppStatics.CurrentLoginUser.Id.ToString(), model.IsUrgent);
+                DeliveryRequest request = new DeliveryRequest(delivery.Id, locationPick.Id, locationDev.Id, cl!.Id, userId.ToString(), model.IsUrgent);
                 await locationRepository.Add(locationPick);
                 await locationRepository.Add(locationDev);
                 await deliveryRepository.Add(delivery);
@@ -49,10 +58,10 @@ namespace Application.ServiceImplementation
             }
             if (delivery != null)
             {
-                Client? cl = await clientRepository.GetByUserId(AppStatics.CurrentLoginUser.Id);
-                Location locationDev = new Location(commDev.Lga!.StateId, commDev.LgaId, commDev.Id, AppStatics.CurrentLoginUser.Id.ToString());
-                Location locationPick = new Location(commPick.Lga!.StateId, commPick.LgaId, commPick.Id, AppStatics.CurrentLoginUser.Id.ToString());
-                DeliveryRequest request = new DeliveryRequest(delivery.Id, locationPick.Id, locationDev.Id, cl!.Id, AppStatics.CurrentLoginUser.Id.ToString(), model.IsUrgent);
+                Client? cl = await clientRepository.GetByUserId(userId);
+                Location locationDev = new Location(commDev.Lga!.StateId, commDev.LgaId, commDev.Id, userId.ToString());
+                Location locationPick = new Location(commPick.Lga!.StateId, commPick.LgaId, commPick.Id, userId.ToString());
+                DeliveryRequest request = new DeliveryRequest(delivery.Id, locationPick.Id, locationDev.Id, cl!.Id, userId.ToString(), model.IsUrgent);
                 await locationRepository.Add(locationPick);
                 await locationRepository.Add(locationDev);
                 await deliveryRequestRepository.Add(request);

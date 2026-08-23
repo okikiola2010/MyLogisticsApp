@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Application.Dtos
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
         public string FirstName { get; set; } = default!;
+        public IFormFile Profile { get; set; } = default!;
         public string LastName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public Guid UserId { get; set; }
@@ -22,6 +24,6 @@ namespace Application.Dtos
         public string FullName => $"{FirstName} {LastName}";
         public List<Delivery> DeliverManDeliveries { get; set; } = new List<Delivery>();
     }
-    public record AddDeliverManRequestModel(string FirstName, string LastName, string Email, string Password, string CreatedBy);
+    public record AddDeliverManRequestModel(string FirstName, string LastName, string Email, string Password, string CreatedBy, IFormFile Profile);
     public record AddDeliverManResponseModel(Guid Id);
 }

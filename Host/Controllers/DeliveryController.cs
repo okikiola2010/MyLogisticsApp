@@ -8,6 +8,7 @@ namespace Host.Controllers
     [ApiController]
     public class DeliveryController(IDeliveryService deliveryService) : ControllerBase
     {
+        [HttpPost("Get")]
         public async Task<IActionResult> GetUndoneDeliveryManWork(Guid id)
         {
             var res = await deliveryService.GetUndoneDeliveryManWork(id);

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Community:BaseEntity
+    public class Community : BaseEntity
     {
         public Guid LgaId { get; set; }
         public Lga? Lga { get; set; }
@@ -24,6 +20,6 @@ namespace Domain.Entities
             UpdatedBy = updatedBy;
             UpdatedAt = DateTime.UtcNow;
         }
-        
+
     }
 }

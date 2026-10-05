@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.ServiceInterfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -17,7 +16,7 @@ namespace Host.Controllers
             {
                 return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest(res);
         }
     }
 }

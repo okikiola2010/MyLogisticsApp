@@ -5,13 +5,10 @@ using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class ClientService(IClientRepository clientRepository,IUserRepository userRepository,IUnitOfWork unitOfWork,AppFileStreamer appFileStreamer) : IClientService
+    public class ClientService(IClientRepository clientRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, AppFileStreamer appFileStreamer) : IClientService
     {
         public async Task<BaseResponse<AddClientResponseModel>> AddClient(AddClientRequestModel model)
         {
@@ -30,12 +27,12 @@ namespace Application.ServiceImplementation
                 if (client == null && user == null)
                 {
                     var file = await appFileStreamer.FileStreamApp(model.Profile);
-                    if(file == null)
+                    if (file == null)
                     {
                         return BaseResponse<AddClientResponseModel>.Fail("You must upload your profile pics");
                     }
                     user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.ClientRole);
-                    client = new Client(model.FirstName, model.LastName, user.Id, model.PhoneNumber, user.Id.ToString(),file);
+                    client = new Client(CapitalizeFirstLetter(model.FirstName), CapitalizeFirstLetter(model.LastName), user.Id, model.PhoneNumber, user.Id.ToString(), file);
                     await userRepository.Add(user);
                     await clientRepository.Add(client);
                     await unitOfWork.SaveChanges();
@@ -52,13 +49,21 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<ClientDto>> GetClient(Guid id)
         {
             var client = await clientRepository.Get(id);
-            if(client == null)
+            if (client == null)
             {
                 return BaseResponse<ClientDto>.Fail("Account not found.........");
             }
             return BaseResponse<ClientDto>.Sucess(client.Adapt<ClientDto>(), "Sucessfully found");
         }
-
+        public async Task<BaseResponse<ClientDto>> GetClientByUserId(Guid userId)
+        {
+            var client = await clientRepository.GetByUserId(userId);
+            if (client == null)
+            {
+                return BaseResponse<ClientDto>.Fail("Account not found.........");
+            }
+            return BaseResponse<ClientDto>.Sucess(client.Adapt<ClientDto>(), "Sucessfully found");
+        }
 
         public async Task<BaseResponse<ClientDto>> GetClient(string phonenumber)
         {
@@ -73,11 +78,22 @@ namespace Application.ServiceImplementation
         {
             var list = await clientRepository.GetAll();
             list = list.Where(x => !x.IsDeleted).ToList();
-            if(list.Count == 0)
+            if (list.Count == 0)
             {
                 return BaseResponse<List<ClientDto>>.Fail("No Client Found");
             }
             return BaseResponse<List<ClientDto>>.Sucess(list.Adapt<List<ClientDto>>());
+        }
+        private string CapitalizeFirstLetter(string name)
+        {
+            name = name.Trim();
+            name = name.Replace(" ", "");
+            string word = $"{name[0].ToString().ToUpper()}";
+            for (int i = 1; i < name.Length; i++)
+            {
+                word += name[i];
+            }
+            return word;
         }
     }
 }

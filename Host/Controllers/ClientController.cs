@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.ServiceInterfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -15,15 +14,21 @@ namespace Host.Controllers
             var res = await clientService.AddClient(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("Get/id/{id:guid}")]
+        [HttpGet("GetById/{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await clientService.GetClient(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
+        [HttpGet("GetByUserId/{userId:guid}")]
+        public async Task<IActionResult> GetByUserId(Guid userId)
+        {
+            var res = await clientService.GetClientByUserId(userId);
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
+        }
 
-        [HttpGet("Get/Phonenumber")]
-        public async Task<IActionResult> Get(string  phonenumber)
+        [HttpGet("GetByPhonenumber/{phonenumber}")]
+        public async Task<IActionResult> Get(string phonenumber)
         {
             var res = await clientService.GetClient(phonenumber);
             return res.IsSuccess ? Ok(res) : BadRequest(res);

@@ -1,13 +1,10 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Dtos
 {
     public class StateDto
     {
-        public Guid Id { get; set; } 
+        public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = default;

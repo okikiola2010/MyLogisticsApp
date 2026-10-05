@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
 //using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hosts
 {
-    public class MessageHub:Hub
+    public class MessageHub : Hub
     {
         public override async Task OnConnectedAsync()
         {

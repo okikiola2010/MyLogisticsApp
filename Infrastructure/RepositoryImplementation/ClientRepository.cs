@@ -2,9 +2,6 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure.RepositoryImplementation
 {
@@ -37,7 +34,7 @@ namespace Infrastructure.RepositoryImplementation
         }
         public async Task Update(Client client)
         {
-             context.Clients.Update(client);
+            context.Clients.Update(client);
         }
     }
 }

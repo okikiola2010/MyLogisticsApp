@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dtos
+﻿namespace Application.Dtos
 {
     public class UserDto
     {
@@ -17,5 +13,5 @@ namespace Application.Dtos
         public string Role { get; set; } = default!;
     }
     public record LoginRequestModel(string Email, string Password);
-    public record LoginResponseModel(Guid Id, string Role,string token);
+    public record LoginResponseModel(Guid Id, string Role, string token);
 }

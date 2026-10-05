@@ -1,18 +1,15 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Domain.Entities
 {
-    public class Client:BaseEntity
+    public class Client : BaseEntity
     {
-        public string FirstName {  get; set; } = default!;
-        public string LastName {  get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public string ProfileString { get; set; } = default!;
-        public Guid UserId { get;  set; }
-        public User? User { get;  set; }
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
         public string FullName => $"{FirstName} {LastName}";
         public List<Notification> UserNotifications { get; set; } = [];
         public List<DeliveryRequest> ClientDeliveryRequests { get; set; } = [];

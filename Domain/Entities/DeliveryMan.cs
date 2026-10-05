@@ -1,12 +1,6 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class DeliveryMan:BaseEntity
+    public class DeliveryMan : BaseEntity
     {
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
@@ -20,7 +14,7 @@ namespace Domain.Entities
         public List<Notification> UserNotifications { get; set; } = new List<Notification>();
         public List<Delivery> DeliveryManDeliveries { get; set; } = new List<Delivery>();
         private DeliveryMan() { }
-        public DeliveryMan(string firstName, string lastName, Guid userId,string createdBy,string? profileSring)
+        public DeliveryMan(string firstName, string lastName, Guid userId, string createdBy, string? profileSring)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -41,7 +35,7 @@ namespace Domain.Entities
             string r = $"{b}-{Guid.NewGuid().ToString().Split("-")[0].ToString().ToUpper()}@{firstName[0].ToString().ToUpper()}{lastName[0].ToString().ToUpper()}".ToUpper();
             return r;
         }
-        public void Update(string firstName, string lastName, string workId, Guid userId,  string updatedBy, bool isDeleted, DateTime lastTimeOrdered)
+        public void Update(string firstName, string lastName, string workId, Guid userId, string updatedBy, bool isDeleted, DateTime lastTimeOrdered)
         {
             FirstName = firstName;
             LastName = lastName;

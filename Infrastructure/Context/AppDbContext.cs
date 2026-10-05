@@ -1,17 +1,14 @@
 ﻿using Application;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure.Context
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options):base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
@@ -23,7 +20,7 @@ namespace Infrastructure.Context
         public DbSet<State> States { get; set; }
         public DbSet<Lga> Lgas { get; set; }
         public DbSet<Community> Communities { get; set; }
-        public DbSet<Location> Locations { get; set; }  
+        public DbSet<Location> Locations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

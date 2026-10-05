@@ -1,14 +1,9 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Notification:BaseEntity
+    public class Notification : BaseEntity
     {
-        public Guid UserId {  get; set; }
-        public User? User {  get; set; }
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
         public string Context { get; set; } = default!;
         private Notification() { }
         public Notification(string context, Guid userId, string createdBy)

@@ -1,11 +1,4 @@
-﻿using Application.Interfaces.Repository;
-using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-
-namespace Application
+﻿namespace Application
 {
     public class AppStatics
     {

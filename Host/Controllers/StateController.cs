@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -15,7 +14,7 @@ namespace Host.Controllers
             var res = await stateService.AddState(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("Get")]
+        [HttpGet("Get/{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await stateService.GetState(id);

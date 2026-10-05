@@ -3,13 +3,10 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class DeliveryService(IDeliveryRepository deliveryRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,INotificationRepository notificationRepository,IUserRepository userRepository) : IDeliveryService
+    public class DeliveryService(IDeliveryRepository deliveryRepository, IDeliveryManRepository deliveryManRepository, IUnitOfWork unitOfWork, INotificationRepository notificationRepository, IUserRepository userRepository) : IDeliveryService
     {
 
         public async Task<BaseResponse<List<Delivery>>> GetUndoneDeliveryManWork(Guid deliveryManId)
@@ -47,11 +44,11 @@ namespace Application.ServiceImplementation
                         dates.Add(req.CreatedAt);
                     }
                 }
-                
+
                 if (FindLowest(dates).AddDays(2) <= DateTime.UtcNow)
                 {
                     var worker = await GetEarliestWorker();
-                    if(worker == null)
+                    if (worker == null)
                     {
                         var admin = await userRepository.Get(AppStatics.AdminEmail);
                         await notificationRepository.Add(new Notification("You have to add Delivery men as much as possible", admin!.Id, "System"));
@@ -63,7 +60,7 @@ namespace Application.ServiceImplementation
                     await notificationRepository.Add(new Notification($"You have assigned to a delivery,Kindly Go and check.", worker.UserId, "System"));
                     foreach (var req in item.Requests)
                     {
-                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.",req.Client!.UserId,"System"));
+                        await notificationRepository.Add(new Notification($"Expect ur delivery anytime,Contact the DeliveryMan with {worker.WorkId}.", req.Client!.UserId, "System"));
                     }
                 }
             }
@@ -85,13 +82,13 @@ namespace Application.ServiceImplementation
         }
         public async Task Assigned(DeliveryMan deliveryMan)
         {
-            deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName,deliveryMan.WorkId, deliveryMan.UserId, "System", false, DateTime.UtcNow);
+            deliveryMan.Update(deliveryMan.FirstName, deliveryMan.LastName, deliveryMan.WorkId, deliveryMan.UserId, "System", false, DateTime.UtcNow);
             await deliveryManRepository.Update(deliveryMan);
             await unitOfWork.SaveChanges();
         }
         public List<Delivery> GetUrgentOne(List<Delivery> deliveries)
-        { 
-            var newlist = new List<Delivery>(); 
+        {
+            var newlist = new List<Delivery>();
             foreach (var item in deliveries)
             {
                 if (item.Requests.Any(x => x.IsUrgent))

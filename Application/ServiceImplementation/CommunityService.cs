@@ -3,17 +3,13 @@ using Application.Interfaces;
 using Application.Interfaces.Repository;
 using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.Service;
-using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class CommunityService(ICommunityRepository communityRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor) : ICommunityService
+    public class CommunityService(ICommunityRepository communityRepository, IUnitOfWork unitOfWork, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor) : ICommunityService
     {
         public async Task<BaseResponse<AddCommunityResponseModel>> AddCountry(AddCommunityRequestModel model)
         {
@@ -46,7 +42,8 @@ namespace Application.ServiceImplementation
                 await unitOfWork.SaveChanges();
                 return BaseResponse<AddCommunityResponseModel>.Sucess(new AddCommunityResponseModel(c.Id));
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
         }
@@ -64,7 +61,7 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<List<Community>>> GetAllForAdmin(Guid lgaId)
         {
             var lgas = await communityRepository.GetCommunitiesByLgaId(lgaId);
-            if(lgas.Count == 0)
+            if (lgas.Count == 0)
             {
                 return BaseResponse<List<Community>>.Fail();
             }
@@ -73,7 +70,7 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<Community?>> Get(Guid id)
         {
             var lga = await communityRepository.Get(id);
-            if(lga != null)
+            if (lga != null)
             {
                 return BaseResponse<Community?>.Sucess(lga);
             }

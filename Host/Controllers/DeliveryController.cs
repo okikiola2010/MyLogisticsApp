@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.ServiceInterfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -8,11 +7,11 @@ namespace Host.Controllers
     [ApiController]
     public class DeliveryController(IDeliveryService deliveryService) : ControllerBase
     {
-        [HttpPost("Get")]
+        [HttpGet("Get/{id:guid}")]
         public async Task<IActionResult> GetUndoneDeliveryManWork(Guid id)
         {
             var res = await deliveryService.GetUndoneDeliveryManWork(id);
-            return res.IsSuccess ?  Ok(res) : BadRequest(res);
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
     }
 }

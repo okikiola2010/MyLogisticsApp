@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Dtos
 {
@@ -19,6 +16,6 @@ namespace Application.Dtos
         public User? Reciever { get; set; }
         public string Context { get; set; } = default!;
     }
-    public record AddMessageRequestModel(Guid SenderUserId,Guid RecieverUserId,string Content);
+    public record AddMessageRequestModel(Guid SenderUserId, Guid RecieverUserId, string Content);
     public record AddMessageResponseModel(Guid Id);
 }

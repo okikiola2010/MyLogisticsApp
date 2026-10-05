@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Dtos
 {
@@ -23,8 +20,8 @@ namespace Application.Dtos
         public Guid DeliveryId { get; set; }
         public Delivery Delivery { get; set; } = default!;
         public DateTime DateExpected { get; set; }
-        
+
     }
-    public record AddDeliveryReqRequestModel(Guid PickUpCommunityId,Guid DeliveryCommunityId, bool IsUrgent);
+    public record AddDeliveryReqRequestModel(Guid PickUpCommunityId, Guid DeliveryCommunityId, bool IsUrgent);
     public record AddDeliveryReqResponseModel(Guid Id);
 }

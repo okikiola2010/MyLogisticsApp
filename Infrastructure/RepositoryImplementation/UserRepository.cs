@@ -2,9 +2,6 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure.RepositoryImplementation
 {
@@ -12,12 +9,12 @@ namespace Infrastructure.RepositoryImplementation
     {
         public async Task Add(User user)
         {
-           await context.Users.AddAsync(user);
+            await context.Users.AddAsync(user);
         }
 
         public async Task<User?> Get(Guid id)
         {
-            return await context.Users.AsNoTracking().FirstOrDefaultAsync(u  => u.Id == id);
+            return await context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User?> Get(string email)

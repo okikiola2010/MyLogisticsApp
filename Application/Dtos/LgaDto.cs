@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Dtos
 {
@@ -19,7 +16,7 @@ namespace Application.Dtos
         public string Name { get; set; } = default!;
 
     }
-    public class AddLgaRequestModel 
+    public class AddLgaRequestModel
     {
         public string Name { get; set; } = default!;
         public Guid StateId { get; set; }

@@ -5,14 +5,10 @@ using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Application
 {
-    public class MessageService(IMessageRepository messageRepository,IUserRepository userRepository,IDeliveryRequestRepository deliveryRequestRepository,IClientRepository clientRepository,IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IHubContext<MessageHub> hubContext) : IMessageService
+    public class MessageService(IMessageRepository messageRepository, IUserRepository userRepository, IDeliveryRequestRepository deliveryRequestRepository, IClientRepository clientRepository, IDeliveryManRepository deliveryManRepository, IUnitOfWork unitOfWork, IHubContext<MessageHub> hubContext) : IMessageService
     {
         public async Task<BaseResponse<AddMessageResponseModel>> AddMessage(AddMessageRequestModel message)
         {
@@ -90,7 +86,7 @@ namespace Application
         public async Task<BaseResponse<List<string>>> GetClientMessageLink(Guid clientId)
         {
             List<string> WorkIds = [];
-            var client =  await clientRepository.Get(clientId);
+            var client = await clientRepository.Get(clientId);
             if (client == null)
             {
                 return BaseResponse<List<string>>.Fail("User not found");
@@ -99,18 +95,18 @@ namespace Application
             var clientMessaage = messages.Where(x => x.SenderUserId == client.UserId || x.RecieverUserId == client.UserId);
             foreach (var item in clientMessaage)
             {
-                if(item.Sender == null || item.Reciever == null)
+                if (item.Sender == null || item.Reciever == null)
                 {
                     return BaseResponse<List<string>>.Fail("User not found");
                 }
                 if (item.Sender!.Role == AppStatics.DeliveryManRole)
                 {
                     var man = await deliveryManRepository.GetByUserId(item.SenderUserId);
-                    if(man == null)
+                    if (man == null)
                     {
                         return BaseResponse<List<string>>.Fail("User not found");
                     }
-                    if(!WorkIds.Contains(man.WorkId))
+                    if (!WorkIds.Contains(man.WorkId))
                     {
                         WorkIds.Add(man.WorkId);
                     }
@@ -182,11 +178,11 @@ namespace Application
             }
             return BaseResponse<List<string>>.Fail("No One to chat");
         }
-        public async Task<BaseResponse<List<Message>>> GetBtwTwoUsers(Guid firstPerson,Guid secondPerson)
+        public async Task<BaseResponse<List<Message>>> GetBtwTwoUsers(Guid firstPerson, Guid secondPerson)
         {
             var messages = await messageRepository.GetMessages(firstPerson, secondPerson);
-            
-            if(messages.Count > 0)
+
+            if (messages.Count > 0)
             {
                 return BaseResponse<List<Message>>.Sucess(messages);
             }

@@ -1,29 +1,23 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Message:BaseEntity
+    public class Message : BaseEntity
     {
         public Guid SenderUserId { get; set; } = default!;
         public User? Sender { get; set; }
         public Guid RecieverUserId { get; set; } = default!;
         public User? Reciever { get; set; }
-        public string Context {  get; set; } = default!;
-        public Message(string context, Guid senderUserId, Guid recieverUserId,string createdBy)
+        public string Context { get; set; } = default!;
+        public Message(string context, Guid senderUserId, Guid recieverUserId, string createdBy)
         {
             SenderUserId = senderUserId;
             RecieverUserId = recieverUserId;
             Context = context;
             CreatedBy = createdBy;
         }
-        public void Update(string context, Guid senderUserId, Guid recieverUserId,  string updatedBy, bool isDeleted)
+        public void Update(string context, Guid senderUserId, Guid recieverUserId, string updatedBy, bool isDeleted)
         {
             Context = context;
-            SenderUserId= senderUserId;
+            SenderUserId = senderUserId;
             RecieverUserId = recieverUserId;
             IsDeleted = isDeleted;
             UpdatedBy = updatedBy;

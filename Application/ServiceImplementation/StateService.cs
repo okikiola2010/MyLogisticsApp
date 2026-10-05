@@ -3,16 +3,12 @@ using Application.Interfaces;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
 using Domain.Entities;
-using Mapster;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class StateService(IStateRepository stateRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor) : IStateService
+    public class StateService(IStateRepository stateRepository, IUnitOfWork unitOfWork, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor) : IStateService
     {
         public async Task<BaseResponse<AddStateResponseModel>> AddState(AddStateRequestModel model)
         {
@@ -46,7 +42,8 @@ namespace Application.ServiceImplementation
                 await unitOfWork.SaveChanges();
                 return BaseResponse<AddStateResponseModel>.Sucess(new AddStateResponseModel(state.Id), "Sucessfully Added");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
 
@@ -67,7 +64,7 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<State?>> GetState(Guid id)
         {
             var state = await stateRepository.Get(id);
-            if(state == null)
+            if (state == null)
             {
                 return BaseResponse<State?>.Fail("State not found");
             }
@@ -76,8 +73,8 @@ namespace Application.ServiceImplementation
 
         public async Task<BaseResponse<State?>> GetState(string name)
         {
-            var state =  await stateRepository.Get(name);
-            if(state == null)
+            var state = await stateRepository.Get(name);
+            if (state == null)
             {
                 return BaseResponse<State?>.Fail("State not found");
             }
@@ -104,7 +101,7 @@ namespace Application.ServiceImplementation
 
         public async Task<BaseResponse<List<State>>> GetAllForAdmin()
         {
-            var newlist =  await stateRepository.GetAll();
+            var newlist = await stateRepository.GetAll();
             if (newlist.Count == 0)
             {
                 return BaseResponse<List<State>>.Fail("No state found");

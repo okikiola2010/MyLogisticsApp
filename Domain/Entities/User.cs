@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class User : BaseEntity
     {
@@ -10,7 +6,7 @@ namespace Domain.Entities
         public string HashPassword { get; set; } = default!;
         public string Role { get; set; } = default!;
         private User() { }
-        public User(string email, string password,string role)
+        public User(string email, string password, string role)
         {
             Email = email;
             HashPassword = password;
@@ -25,6 +21,6 @@ namespace Domain.Entities
             IsDeleted = isDeleted;
             UpdatedAt = DateTime.UtcNow;
         }
-        
+
     }
 }

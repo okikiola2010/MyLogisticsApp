@@ -6,12 +6,12 @@ using Application.Interfaces.RepositoryInterfaces;
 using Application.Interfaces.Service;
 using Application.Interfaces.ServiceInterfaces;
 using Application.ServiceImplementation;
-using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Context;
 using Infrastructure.RepositoryImplementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
@@ -59,7 +59,7 @@ namespace Host
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<AppFileStreamer>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IDeliveryManRepository,DeliverManRepository>();
+            builder.Services.AddScoped<IDeliveryManRepository, DeliverManRepository>();
             builder.Services.AddScoped<IStateRepository, StateRepository>();
             builder.Services.AddScoped<ILgaRepository, LgaRepository>();
             builder.Services.AddScoped<ICommunityRepository, CommunityRepository>();
@@ -68,53 +68,72 @@ namespace Host
             builder.Services.AddScoped<ILocationRepository, LocationRepository>();
             builder.Services.AddScoped<IDeliveryRequestRepository, DeliveryRequestRepository>();
             builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
-            builder.Services.AddScoped<IClientService,ClientService>();
-            builder.Services.AddScoped<IDeliveryManService,DeliveryManService>();
-            builder.Services.AddScoped<IAuthService,AuthService>();
-            builder.Services.AddScoped<IStateService,StateService>();
-            builder.Services.AddScoped<ILgaService,LgaService>();
-            builder.Services.AddScoped<ICommunityService,CommunityService>();
+            builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<IDeliveryManService, DeliveryManService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IStateService, StateService>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
+            builder.Services.AddScoped<ILgaService, LgaService>();
+            builder.Services.AddScoped<ICommunityService, CommunityService>();
             builder.Services.AddScoped<IDeliveryService, DeliveryService>();
             builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
             //builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddHostedService<DeliveryBackGroundService>();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://127.0.0.1:5500")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
 
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    builder.Configuration["Jwt:Key"]!
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        builder.Configuration["Jwt:Key"]!
+                    )
                 )
-            )
-        };
-    });
+                };
+            });
 
 
             var app = builder.Build();
-
-
+            var profilePicturesPath = @"C:\Users\USER\source\repos\Logistics\Host\profiles-pictures\";
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(profilePicturesPath),
+                RequestPath = "/profile-pictures"
+            });
+            Console.WriteLine(File.Exists(Path.Combine(
+    profilePicturesPath,
+    "2d14876c-3ca4-4e09-beea-fb8da60b8ee5.jpg"
+)));
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
-               
+
             }
             app.UseHttpsRedirection();
-
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Location:BaseEntity
+    public class Location : BaseEntity
     {
         public Guid StateId { get; set; }
         public Guid LgaId { get; set; }
@@ -15,16 +10,16 @@ namespace Domain.Entities
         public Community Community { get; set; } = default!;
         public string FullAddress => $"{State.Name},{Lga.Name},{Community.Name}";
         private Location() { }
-        public Location(Guid stateId, Guid lgaId,Guid communityId, string createdBy)
+        public Location(Guid stateId, Guid lgaId, Guid communityId, string createdBy)
         {
             CommunityId = communityId;
             StateId = stateId;
             LgaId = lgaId;
             CreatedBy = createdBy;
         }
-        Location a = new Location() {  };
+        Location a = new Location() { };
 
-        public void Update(Guid stateId, Guid lgaId, Guid communityId,   string updatedBy, bool isDeleted)
+        public void Update(Guid stateId, Guid lgaId, Guid communityId, string updatedBy, bool isDeleted)
         {
             CommunityId = communityId;
             StateId = stateId;

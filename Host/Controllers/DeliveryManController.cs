@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.ServiceInterfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -15,13 +14,13 @@ namespace Host.Controllers
             var res = await deliveryManService.AddDeliveryMan(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("Get/id/{id}")]
+        [HttpGet("Get/id/{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await deliveryManService.Get(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("WorkId")]
+        [HttpGet("GetByWorkId/{workId}")]
         public async Task<IActionResult> Get(string workId)
         {
             var res = await deliveryManService.Get(workId);

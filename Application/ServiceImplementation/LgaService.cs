@@ -4,14 +4,11 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class LgaService(ILgaRepository lgaRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor) : ILgaService
+    public class LgaService(ILgaRepository lgaRepository, IUnitOfWork unitOfWork, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor) : ILgaService
     {
         public async Task<BaseResponse<AddLgaResponseModel>> AddLga(AddLgaRequestModel model)
         {
@@ -42,16 +39,17 @@ namespace Application.ServiceImplementation
                 await unitOfWork.SaveChanges();
                 return BaseResponse<AddLgaResponseModel>.Sucess(new AddLgaResponseModel(lga.Id), "Sucessfully Created");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
-           
+
         }
         public async Task<BaseResponse<List<Lga>>> GetLgasByStateId(Guid stateId)
         {
             var lgas = await lgaRepository.GetLgasByStateId(stateId);
             lgas = lgas.Where(x => !x.IsDeleted).ToList();
-            if(lgas.Count == 0)
+            if (lgas.Count == 0)
             {
                 return BaseResponse<List<Lga>>.Fail("No lga found");
             }

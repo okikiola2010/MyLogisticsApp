@@ -1,11 +1,6 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Delivery:BaseEntity
+    public class Delivery : BaseEntity
     {
         public bool HasDelivered { get; set; } = default;
         public Guid LgaId { get; set; }

@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -13,7 +12,7 @@ namespace Host.Controllers
         public async Task<IActionResult> AddCommunity(AddCommunityRequestModel model)
         {
             var res = await communityService.AddCountry(model);
-            return res.IsSuccess ? Ok(res) : BadRequest(res); 
+            return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
         [HttpGet("AdminGetByLga")]
         public async Task<IActionResult> GetCommunitiesForLgaForAdmin(Guid lgaId)
@@ -21,16 +20,16 @@ namespace Host.Controllers
             var res = await communityService.GetAllForAdmin(lgaId);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("GetByLga")]
+        [HttpGet("GetByLga/{lgaId}")]
         public async Task<IActionResult> GetCommunitiesForLga(Guid lgaId)
         {
             var res = await communityService.GetAll(lgaId);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("Get")]
-        public async Task<IActionResult> GetCommunity(Guid lgaId)
+        [HttpGet("Get/{id}")]
+        public async Task<IActionResult> GetCommunity(Guid id)
         {
-            var res = await communityService.GetAll(lgaId);
+            var res = await communityService.Get(id);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
 

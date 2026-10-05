@@ -6,14 +6,11 @@ using Application.Interfaces.ServiceInterfaces;
 using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Application.ServiceImplementation
 {
-    public class DeliveryManService(IDeliveryManRepository deliveryManRepository,IUnitOfWork unitOfWork,IUserRepository userRepository,IHttpContextAccessor httpContextAccessor,AppFileStreamer streamer) : IDeliveryManService
+    public class DeliveryManService(IDeliveryManRepository deliveryManRepository, IUnitOfWork unitOfWork, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, AppFileStreamer streamer) : IDeliveryManService
     {
         public async Task<BaseResponse<AddDeliverManResponseModel>> AddDeliveryMan(AddDeliverManRequestModel model)
         {
@@ -43,7 +40,7 @@ namespace Application.ServiceImplementation
                     }
                     user = new User(model.Email, BCrypt.Net.BCrypt.HashPassword(model.Password), AppStatics.DeliveryManRole);
                     var filestring = await streamer.FileStreamApp(model.Profile);
-                    DeliveryMan deliveryMan = new DeliveryMan(model.FirstName, model.LastName, user.Id, userId.ToString(), filestring);
+                    DeliveryMan deliveryMan = new DeliveryMan(CapitalizeFirstLetter(model.FirstName), model.LastName, user.Id, userId.ToString(), filestring);
                     var deliveryMen = await deliveryManRepository.GetAll();
 
                     while (deliveryMen.Any(x => x.WorkId == deliveryMan.WorkId))
@@ -58,7 +55,8 @@ namespace Application.ServiceImplementation
                 }
                 return BaseResponse<AddDeliverManResponseModel>.Fail();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BaseResponse<AddDeliverManResponseModel>.Fail(ex.Message);
             }
 
@@ -67,7 +65,7 @@ namespace Application.ServiceImplementation
         public async Task<BaseResponse<DeliverManDto>> Get(Guid id)
         {
             var man = await deliveryManRepository.Get(id);
-            if(man == null)
+            if (man == null)
             {
                 return BaseResponse<DeliverManDto>.Fail("Delivery man not found");
             }
@@ -84,7 +82,7 @@ namespace Application.ServiceImplementation
             return BaseResponse<DeliverManDto>.Sucess(man.Adapt<DeliverManDto>());
         }
 
-        
+
 
         public string GetWorkId(string firstName, string lastName)
         {
@@ -102,6 +100,17 @@ namespace Application.ServiceImplementation
                 return BaseResponse<List<DeliverManDto>>.Fail("No DeliveryMan Found");
             }
             return BaseResponse<List<DeliverManDto>>.Sucess(list.Adapt<List<DeliverManDto>>());
+        }
+        private string CapitalizeFirstLetter(string name)
+        {
+            name = name.Trim();
+            name = name.Replace(" ", "");
+            string word = $"{name[0].ToString().ToUpper()}";
+            for (int i = 1; i < name.Length; i++)
+            {
+                word += name[i];
+            }
+            return word;
         }
     }
 }

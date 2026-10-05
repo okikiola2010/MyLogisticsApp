@@ -1,14 +1,9 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public  class DeliveryRequest:BaseEntity
+    public class DeliveryRequest : BaseEntity
     {
-        public Guid ClientId {  get; set; }
-        public Client? Client {  get; set; }
+        public Guid ClientId { get; set; }
+        public Client? Client { get; set; }
         public bool IsUrgent { get; set; }
         public bool IsReady { get; set; } = default!;
         public Guid PickupLocationId { get; set; } = default!;
@@ -17,17 +12,17 @@ namespace Domain.Entities
         public Location DeliveryLocation { get; set; } = default!;
         public Guid DeliveryId { get; set; }
         public Delivery Delivery { get; set; } = default!;
-        public DateTime DateExpected {  get; set; }
-        public DeliveryRequest(Guid deliveryId, Guid pickupLocationId, Guid deliveryLocationId, Guid clientId, string createdBy,bool isUrgent)
+        public DateTime DateExpected { get; set; }
+        public DeliveryRequest(Guid deliveryId, Guid pickupLocationId, Guid deliveryLocationId, Guid clientId, string createdBy, bool isUrgent)
         {
-            DeliveryId  = deliveryId;
+            DeliveryId = deliveryId;
             PickupLocationId = pickupLocationId;
             DeliveryLocationId = deliveryLocationId;
             ClientId = clientId;
             IsUrgent = isUrgent;
             CreatedBy = createdBy;
         }
-        public void Update(Guid pickupLocationId, Guid deliveryLocationId,string updateBy, bool isDeleted,bool isReady, bool isUrgent)
+        public void Update(Guid pickupLocationId, Guid deliveryLocationId, string updateBy, bool isDeleted, bool isReady, bool isUrgent)
         {
             PickupLocationId = pickupLocationId;
             DeliveryLocationId = deliveryLocationId;

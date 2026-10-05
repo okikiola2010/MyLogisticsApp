@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class Lga:BaseEntity
+    public class Lga : BaseEntity
     {
-        public Guid StateId { get; set; } 
+        public Guid StateId { get; set; }
         public State? State { get; set; }
         public string Name { get; set; } = default!;
         public List<Community> Cities { get; set; } = [];
-        private Lga () { }
-        public Lga(string name,Guid stateId,string createdBy) 
+        private Lga() { }
+        public Lga(string name, Guid stateId, string createdBy)
         {
             Name = name;
             CreatedBy = createdBy;

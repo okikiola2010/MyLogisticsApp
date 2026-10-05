@@ -1,6 +1,5 @@
 ﻿using Application.Dtos;
 using Application.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Host.Controllers
@@ -15,13 +14,13 @@ namespace Host.Controllers
             var res = await lgaService.AddLga(model);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("GetStateLga")]
+        [HttpGet("GetStateLga/{stateId:guid}")]
         public async Task<IActionResult> GetStateLga(Guid stateId)
         {
             var res = await lgaService.GetLgasByStateId(stateId);
             return res.IsSuccess ? Ok(res) : BadRequest(res);
         }
-        [HttpGet("GetStateLgaForAdmin")]
+        [HttpGet("GetStateLgaForAdmin/{stateId:guid}")]
         public async Task<IActionResult> GetLgaForStateForAdmin(Guid stateId)
         {
             var res = await lgaService.GetLgasByStateIdForAdmin(stateId);
